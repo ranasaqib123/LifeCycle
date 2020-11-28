@@ -1,0 +1,71 @@
+<template>
+  <v-app>
+    <v-navigation-drawer
+      class="drawer"
+      style="background-color: #35495e; position: fixed"
+      absolute
+      permanent
+      app
+    >
+      <template v-slot:prepend>
+        <v-list-item-title
+          style="margin: 15px; align-items: center; color: white"
+          >LifeCycle</v-list-item-title
+        >
+        <v-list-item two-line>
+          <v-list-item-avatar>
+            <img src="https://randomuser.me/api/portraits/women/81.jpg" />
+          </v-list-item-avatar>
+
+          <v-list-item-content>
+            <v-list-item-title style="color: white"
+              >Jane Smith</v-list-item-title
+            >
+          </v-list-item-content>
+        </v-list-item>
+      </template>
+      <v-list-item-title class="drawer-menu-item">Menu</v-list-item-title>
+      <v-list dense>
+        <v-list-item v-for="item in items" :key="item.title" :to="item.to">
+          <v-list-item-content>
+            <v-list-item-title class="drawer-menu-item">{{
+              item.title
+            }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+    <v-content>
+      <nuxt />
+    </v-content>
+  </v-app>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      items: [
+        {
+          title: 'Projects',
+          to: '/',
+        },
+        {
+          title: 'Materials',
+          to: '/materials',
+        },
+        {
+          title: 'Statistics',
+          to: '/statistics',
+        },
+      ],
+    }
+  },
+}
+</script>
+<style lang="sass">
+.drawer
+  background-color: #35495e
+.drawer-menu-item
+  color: white
+</style>
