@@ -96,10 +96,11 @@
             ></v-text-field>
             <v-text-field
               v-model="topology"
-              label="Floor Area BTA"
+              label="Topology"
               dense
               outlined
             ></v-text-field>
+            <input />
             <v-text-field
               v-model="floorAreaBRA"
               label="Floor Area BRA"
@@ -167,8 +168,9 @@ export default {
     modalDialog() {
       this.dialog = true
     },
-    addProject() {
-      db.collection('projects')
+    async addProject() {
+      const projectRef = db
+        .collection('projects')
         .add({
           buildingName: this.buildingName,
           country: this.country,
@@ -182,6 +184,15 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+      const projectId = await projectRef
+      console.log(projectId)
+      const id = projectId.id
+      console.log(id)
+      await db
+        .collection('projects')
+        .doc(id)
+        .collection('version')
+        .add({ version: '', projectPhase: '', lastEdited: '' })
       this.dialog = false
     },
   },

@@ -149,7 +149,9 @@
                 <v-btn color="blue darken-1" text @click="close">
                   Cancel
                 </v-btn>
-                <v-btn color="blue darken-1" text> Save </v-btn>
+                <v-btn color="blue darken-1" text @click="addVersion">
+                  Save
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -304,6 +306,11 @@ export default {
     //   })
   },
   methods: {
+    addVersion() {
+      const projectRef = db.collection('projects').doc()
+      const projectId = projectRef.id
+      console.log(projectId)
+    },
     editItem(item) {
       // this.$route.params.id
       this.editedIndex = this.items.indexOf(item)

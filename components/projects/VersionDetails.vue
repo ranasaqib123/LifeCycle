@@ -12,7 +12,15 @@
       <div style="margin-left: 130px">
         <v-row><v-col>project</v-col></v-row>
         <v-row><v-col>project</v-col></v-row>
-        <v-row><v-col>version</v-col><v-col>version</v-col></v-row>
+        <v-row
+          ><v-col>dfjdfsdfdfsfdsf</v-col
+          ><v-col style="margin-left: -600px"
+            ><v-btn x-small rounded
+              ><v-icon x-small>mdi-plus</v-icon>create new version based on this
+              design</v-btn
+            ></v-col
+          ></v-row
+        >
       </div>
       <div>
         <v-card>
@@ -23,23 +31,10 @@
             centered
             dark
           >
-            <v-tab
-              v-for="(tab, i) in tabItems"
-              :key="i"
-              :href="`#tab-${i}`"
-              @click="tabClick(i)"
-              >{{ tab }}</v-tab
-            >
+            <v-tab v-for="(tab, i) in tabItems" :key="i" @click="tabClick(i)">{{
+              tab
+            }}</v-tab>
           </v-tabs>
-          <v-tabs-items v-model="tab">
-            <v-tab-item v-for="(component, i) in tabItems" :key="i">
-              <v-card>
-                <v-card-text>
-                  <component :is="component.component"></component>
-                </v-card-text>
-              </v-card>
-            </v-tab-item>
-          </v-tabs-items>
         </v-card>
       </div>
     </div>
