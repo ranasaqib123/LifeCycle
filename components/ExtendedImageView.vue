@@ -61,8 +61,8 @@
 </template>
 
 <script>
-import { storage } from '@/firebase'
 import firebase from 'firebase'
+import storage from 'firebase'
 
 export default {
   name: 'ExtendedImageView',

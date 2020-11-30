@@ -24,24 +24,35 @@
     </div>
     <div class="card">
       <v-card
-        v-for="(name, i) in projects"
+        v-for="(project, i) in projects"
         :key="i"
         class="mx-auto"
         width="310"
-        height="200"
+        height="170"
         outlined
-        :to="`/projects/projectdetails/${name.id}`"
+        :to="`/projects/projectdetails/${project.id}`"
       >
-        <v-list-item>
-          <v-list-item-content>
-            <div class="overline mb-4">{{ name.buildingName }}</div>
-          </v-list-item-content>
-        </v-list-item>
+        <v-img :src="src" height="170px">
+          <v-list-item>
+            <v-list-item-content>
+              <h4 style="color: white">{{ project.buildingName }}</h4>
+              <p style="color: white">{{ project.version }}</p>
+              <br />
+              <p style="color: white">{{ project.topology }}</p>
+              <br />
+              <p style="color: white">{{ project.floorAreaBYA }}</p>
+              <br />
+              <p style="color: white">
+                {{ project.city }},{{ project.country }}
+              </p>
+            </v-list-item-content>
+          </v-list-item>
+        </v-img>
       </v-card>
       <v-card
         class="mx-auto"
         width="310"
-        height="200"
+        height="170"
         outlined
         @click="modalDialog"
       >
@@ -60,10 +71,23 @@
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="600px">
         <v-card>
+          <div>
+            <v-icon
+              style="margin-left: 12px; margin-top: 10px"
+              @click="closeDialog"
+              >mdi-arrow-left</v-icon
+            >
+          </div>
           <v-card-title>
             <span class="headline">Create Project</span>
           </v-card-title>
           <v-card-text>
+            <v-text-field
+              v-model="projectName"
+              label="Project Name"
+              dense
+              outlined
+            ></v-text-field>
             <v-text-field
               v-model="buildingName"
               label="Building Name"
@@ -100,7 +124,6 @@
               dense
               outlined
             ></v-text-field>
-            <input />
             <v-text-field
               v-model="floorAreaBRA"
               label="Floor Area BRA"
@@ -131,6 +154,14 @@
         </v-card>
       </v-dialog>
     </v-row>
+    <v-snackbar
+      v-model="snackbar"
+      bottom
+      :color="snackbarColor"
+      :timeout="2000"
+    >
+      {{ snackbarText }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -140,7 +171,12 @@ export default {
   name: 'Projects',
   data() {
     return {
+      src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
       dialog: false,
+      snackbar: false,
+      snackbarColor: 'green',
+      snackbarText: 'Success',
+      projectName: '',
       buildingName: '',
       country: '',
       city: '',
@@ -154,28 +190,34 @@ export default {
     }
   },
   created() {
-    db.collection('projects')
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          const projects = doc.data()
-          projects.id = doc.id
-          this.projects.push(projects)
-        })
-      })
+    this.getProjects()
   },
   methods: {
     modalDialog() {
       this.dialog = true
     },
+    getProjects() {
+      db.collection('projects')
+        .get()
+        .then((snapshot) => {
+          snapshot.forEach((doc) => {
+            const projects = doc.data()
+            projects.id = doc.id
+            this.projects.push(projects)
+          })
+        })
+    },
     async addProject() {
+      this.projects = []
       const projectRef = db
         .collection('projects')
         .add({
+          projectName: this.projectName,
           buildingName: this.buildingName,
           country: this.country,
           city: this.city,
           street: this.street,
+          topology: this.topology,
           postalCode: this.postalCode,
           floorAreaBRA: this.floorAreaBRA,
           floorAreaBTA: this.floorAreaBTA,
@@ -184,15 +226,16 @@ export default {
         .catch((err) => {
           console.log(err)
         })
-      const projectId = await projectRef
-      console.log(projectId)
+      const projectId = projectRef
       const id = projectId.id
-      console.log(id)
-      await db
-        .collection('projects')
-        .doc(id)
-        .collection('version')
-        .add({ version: '', projectPhase: '', lastEdited: '' })
+      await db.collection('projects').doc(id).collection('version')
+      this.dialog = false
+      this.getProjects()
+      this.snackbar = true
+      this.snackbarColor = 'green'
+      this.snackbarText = 'Project Created Successfully '
+    },
+    closeDialog() {
       this.dialog = false
     },
   },

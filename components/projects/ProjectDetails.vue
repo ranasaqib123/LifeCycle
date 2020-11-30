@@ -12,7 +12,7 @@
       <div style="margin-left: 130px">
         <h2 style="color: white">Project</h2>
         <h2 style="color: white">
-          Fantasy Project
+          {{ projectDetails.projectName }}
           <v-btn
             x-small
             fab
@@ -114,9 +114,9 @@
     <div style="margin: 50px">
       <v-data-table
         :headers="headers"
-        :items="items"
+        :items="version"
         class="elevation-1"
-        @click:row="version"
+        @click:row="versionId"
       >
         <template v-slot:top>
           <v-spacer></v-spacer>
@@ -132,13 +132,13 @@
               </v-card-title>
               <v-card-text>
                 <v-text-field
-                  v-model="editedItem.version"
+                  v-model="versionInput"
                   label="Version"
                   outlined
                   dense
                 ></v-text-field>
                 <v-text-field
-                  v-model="editedItem.projectPhase"
+                  v-model="projectPhase"
                   label="Project Phase"
                   outlined
                   dense
@@ -171,7 +171,12 @@
           <v-icon v-if="item.completed == true" small class="mr-2"
             >mdi-pencil</v-icon
           >
-          <v-icon v-else small class="mr-2" color="blue" @click="editItem(item)"
+          <v-icon
+            v-else
+            small
+            class="mr-2"
+            color="blue"
+            @click="addVersion(item)"
             >mdi-pencil</v-icon
           >
           <v-icon small class="mr-2" @click="duplicateItem(item)"
@@ -180,25 +185,34 @@
         </template>
       </v-data-table>
     </div>
+    <v-snackbar
+      v-model="snackbar"
+      bottom
+      :color="snackbarColor"
+      :timeout="2000"
+    >
+      {{ snackbarText }}
+    </v-snackbar>
   </div>
 </template>
 
 <script>
 import db from '@/plugins/firebase'
-
 export default {
   name: 'ProjectDetails',
   data() {
     return {
       loading: false,
       dialog: false,
+      snackbar: false,
+      snackbarColor: 'green',
+      snackbarText: 'Success',
       isEditing: false,
       projectDetails: {},
       editedIndex: -1,
-      editedItem: {
-        version: '',
-        projectPhase: '',
-      },
+      versionInput: '',
+      projectPhase: '',
+      version: [],
       headers: [
         {
           text: 'Version',
@@ -217,57 +231,6 @@ export default {
           value: 'actions',
         },
       ],
-      items: [
-        {
-          id: '1',
-          version: '1.0',
-          projectPhase: 'initial',
-          lastEdited: '21/1/20',
-          completed: true,
-        },
-        {
-          id: '2',
-          version: '1.0',
-          projectPhase: 'initial',
-          lastEdited: '21/1/20',
-          completed: true,
-        },
-        {
-          id: '3',
-          version: '1.0',
-          projectPhase: 'initial',
-          lastEdited: '21/1/20',
-          completed: true,
-        },
-        {
-          id: '4',
-          version: '1.0',
-          projectPhase: 'initial',
-          lastEdited: '21/1/20',
-          completed: false,
-        },
-        {
-          id: '5',
-          version: '2.0',
-          projectPhase: 'completed',
-          lastEdited: '00/11/2000',
-          completed: false,
-        },
-        {
-          id: '7',
-          version: '1.0',
-          projectPhase: 'initial',
-          lastEdited: '21/1/20',
-          completed: true,
-        },
-        {
-          id: '6',
-          version: '1.0',
-          projectPhase: 'initial',
-          lastEdited: '21/1/20',
-          completed: false,
-        },
-      ],
     }
   },
   computed: {
@@ -275,63 +238,134 @@ export default {
       return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
     },
   },
-  async created() {
-    const id = this.$route.params.id
-    console.log(id)
-    const data = db.collection('projects').doc(id)
-    await data
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          console.log(doc.data())
-          this.projectDetails = doc.data()
-        } else {
-          console.log('no such document found')
-        }
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-    // console.log(data.buildingName)
-    // db.collection('projects')
-    //   .where('id', '==', 'id')
-    //   .get()
-    //   .then((snapshot) => {
-    //     snapshot.forEach((doc) => {
-    //       const data = doc.data()
-    //       data.id = doc.id
-    //       this.projectDetails = data
-    //       console.log(data)
-    //     })
-    //   })
+  mounted() {
+    this.getVersion()
   },
   methods: {
-    addVersion() {
-      const projectRef = db.collection('projects').doc()
-      const projectId = projectRef.id
-      console.log(projectId)
-    },
-    editItem(item) {
-      // this.$route.params.id
-      this.editedIndex = this.items.indexOf(item)
-      // console.log(index)
-      this.editedItem = Object.assign({}, item)
+    async addVersion(item) {
+      this.version = []
+      const id = this.$route.params.id
+      this.editedIndex = this.version.indexOf(item)
       this.dialog = true
-      // this.editedItem = Object.assign({}, item)
-      // this.dialog = truex
+      if (this.editedIndex > -1) {
+        const data = await db.collection('projects').doc(id)
+        await data
+          .collection('version')
+          .get()
+          .then((snapshot) => {
+            snapshot.forEach((doc) => {
+              const subDocData = doc.data()
+              console.log(subDocData)
+            })
+          })
+        console.log('edited condition running')
+      } else {
+        db.collection('projects')
+          .doc(id)
+          .collection('version')
+          .add({
+            version: this.versionInput,
+            projectPhase: this.projectPhase,
+            lastEdited: 'never',
+            completed: true,
+          })
+          .then(() => {
+            console.log(' version added')
+          })
+        this.dialog = false
+        await this.getVersion()
+        this.snackbar = true
+        this.snackbarColor = 'green'
+        this.snackbarText = 'Version Created Successfully'
+      }
     },
-    duplicateItem(item) {
+    async getVersion() {
+      const id = this.$route.params.id
+      db.collection('projects')
+        .doc(id)
+        .collection('version')
+        .get()
+        .then((snapshot) => {
+          snapshot.forEach((doc) => {
+            const data = doc.data()
+            this.version.push(data)
+          })
+        })
+      await db
+        .collection('projects')
+        .doc(id)
+        .get()
+        .then((doc) => {
+          if (doc.exists) {
+            console.log(doc.data())
+            this.projectDetails = doc.data()
+          } else {
+            console.log('no such document found')
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+      await db
+        .collection('projects')
+        .doc(id)
+        .collection('version')
+        .get()
+        .then((doc) => {
+          if (doc.exists) {
+            console.log(doc.data())
+          } else {
+            console.log('no document')
+          }
+        })
+    },
+    async duplicateItem(item) {
+      this.version = []
+      const id = this.$route.params.id
+      this.editedIndex = this.version.indexOf(item)
+      this.dialog = true
+      if (this.editedIndex > -1) {
+        const data = await db.collection('projects').doc(id)
+        await data
+          .collection('version')
+          .get()
+          .then((snapshot) => {
+            snapshot.forEach((doc) => {
+              const subDocData = doc.data()
+              console.log(subDocData)
+            })
+          })
+        console.log('edited condition running')
+      } else {
+        db.collection('projects')
+          .doc(id)
+          .collection('version')
+          .add({
+            version: item.version,
+            projectPhase: item.projectPhase,
+            lastEdited: 'never',
+            completed: false,
+          })
+          .then(() => {
+            console.log(' version added')
+          })
+        this.dialog = false
+        await this.getVersion()
+        this.snackbar = true
+        this.snackbarColor = 'green'
+        this.snackbarText = 'Version Cloned Successfully'
+      }
       // console.log(item)
-      const index = this.items.indexOf(item)
-      const data = { ...item }
-      console.log(data)
-      this.items.push({
-        version: data.version,
-        projectPhase: data.projectPhase,
-        lastEdited: data.lastEdited,
-        completed: false,
-      })
-      console.log(index)
+      // const index = this.items.indexOf(item)
+      // const data = { ...item }
+      // console.log(data)
+      // this.version.push({
+      //   version: data.versionInput,
+      //   projectPhase: data.projectPhase,
+      //   lastEdited: data.lastEdited,
+      //   completed: false,
+      // })
+      // console.log(index)
     },
     close() {
       this.dialog = false
@@ -343,7 +377,7 @@ export default {
     goBack() {
       this.$router.go(-1)
     },
-    version(i) {
+    versionId(i) {
       this.$router.push(`versiondetails/${i.id}`)
     },
   },
