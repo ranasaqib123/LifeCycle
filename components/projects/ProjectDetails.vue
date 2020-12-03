@@ -10,19 +10,33 @@
       "
     >
       <div style="margin-left: 130px">
-        <h2 style="color: white">Project</h2>
-        <h2 style="color: white">
-          {{ projectDetails.projectName }}
-          <v-btn
-            x-small
-            fab
+        <v-col cols="12" sm="6" md="3">
+          <h2 style="color: white">Project</h2>
+          <v-text-field
+            v-if="isEditing == true"
+            label="Edit Project Name"
+            color="white"
+            solo-inverted
+            dense
+            flat
+            outlined
             dark
-            color="#35495e"
-            style="margin-left: 20px; margin-bottom: 5px"
-          >
-            <v-icon color="white">mdi-pencil</v-icon>
-          </v-btn>
-        </h2>
+            @focusout="changeProjectName"
+          ></v-text-field>
+          <h2 v-else style="color: white">
+            {{ projectDetails.projectName }}
+            <v-btn
+              x-small
+              fab
+              dark
+              color="#35495e"
+              style="margin-left: 20px; margin-bottom: 5px"
+              @click="changeProjectField"
+            >
+              <v-icon color="white"> mdi-pencil</v-icon>
+            </v-btn>
+          </h2>
+        </v-col>
       </div>
     </div>
     <div style="margin-left: 25px; margin-top: 25px">
@@ -112,12 +126,7 @@
       "
     ></div>
     <div style="margin: 50px">
-      <v-data-table
-        :headers="headers"
-        :items="version"
-        class="elevation-1"
-        @click:row="versionId"
-      >
+      <v-data-table :headers="headers" :items="version" class="elevation-1">
         <template v-slot:top>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
@@ -243,9 +252,9 @@ export default {
   },
   methods: {
     async addVersion(item) {
-      this.version = []
       const id = this.$route.params.id
       this.editedIndex = this.version.indexOf(item)
+      console.log(this.editedIndex)
       this.dialog = true
       if (this.editedIndex > -1) {
         const data = await db.collection('projects').doc(id)
@@ -374,12 +383,19 @@ export default {
         this.editedIndex = -1
       })
     },
+    changeProjectField() {
+      this.isEditing = true
+    },
+    changeProjectName() {
+      this.isEditing = false
+    },
     goBack() {
       this.$router.go(-1)
     },
-    versionId(i) {
-      this.$router.push(`versiondetails/${i.id}`)
-    },
+    // versionId(i) {
+    //   this.$router.push(`versiondetails/${i.id}`)
+    // @click:row="versionId"
+    // },
   },
 }
 </script>

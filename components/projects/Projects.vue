@@ -69,90 +69,176 @@
       </v-card>
     </div>
     <v-row justify="center">
-      <v-dialog v-model="dialog" persistent max-width="600px">
-        <v-card>
-          <div>
-            <v-icon
-              style="margin-left: 12px; margin-top: 10px"
-              @click="closeDialog"
-              >mdi-arrow-left</v-icon
-            >
-          </div>
-          <v-card-title>
-            <span class="headline">Create Project</span>
-          </v-card-title>
-          <v-card-text>
-            <v-text-field
-              v-model="projectName"
-              label="Project Name"
-              dense
-              outlined
-            ></v-text-field>
-            <v-text-field
-              v-model="buildingName"
-              label="Building Name"
-              dense
-              outlined
-            ></v-text-field>
-            <v-text-field
-              v-model="country"
-              label="Country"
-              dense
-              outlined
-            ></v-text-field>
-            <v-text-field
-              v-model="city"
-              label="City"
-              dense
-              outlined
-            ></v-text-field>
-            <v-text-field
-              v-model="street"
-              label="Street"
-              dense
-              outlined
-            ></v-text-field>
-            <v-text-field
-              v-model="postalCode"
-              label="Postal Code"
-              dense
-              outlined
-            ></v-text-field>
-            <v-text-field
-              v-model="topology"
-              label="Topology"
-              dense
-              outlined
-            ></v-text-field>
-            <v-text-field
-              v-model="floorAreaBRA"
-              label="Floor Area BRA"
-              dense
-              outlined
-            ></v-text-field>
-            <v-text-field
-              v-model="floorAreaBTA"
-              label="Floor Area BTA"
-              dense
-              outlined
-            ></v-text-field>
-            <v-text-field
-              v-model="floorAreaBYA"
-              label="Floor Area BYA"
-              dense
-              outlined
-            ></v-text-field>
-          </v-card-text>
+      <validation-observer v-slot:="{ invalid }">
+        <form>
+          <v-dialog v-model="dialog" persistent max-width="600px">
+            <v-card>
+              <div>
+                <v-icon
+                  style="margin-left: 12px; margin-top: 10px"
+                  @click="closeDialog"
+                  >mdi-arrow-left</v-icon
+                >
+              </div>
+              <v-card-title>
+                <span class="headline">Create Project</span>
+              </v-card-title>
+              <v-card-text>
+                <validation-provider
+                  v-slot:="{ errors }"
+                  name="Project Name"
+                  :rules="{ required: true }"
+                >
+                  <v-text-field
+                    v-model="projectName"
+                    label="Project Name"
+                    dense
+                    :error-messages="errors"
+                    outlined
+                  ></v-text-field>
+                </validation-provider>
+                <validation-provider
+                  v-slot:="{ errors }"
+                  name="Building Name"
+                  :rules="{ required: true }"
+                >
+                  <v-text-field
+                    v-model="buildingName"
+                    label="Building Name"
+                    :error-messages="errors"
+                    dense
+                    outlined
+                  ></v-text-field>
+                </validation-provider>
+                <validation-provider
+                  v-slot:="{ errors }"
+                  name="Country"
+                  :rules="{ required: true }"
+                >
+                  <v-text-field
+                    v-model="country"
+                    label="Country"
+                    :error-messages="errors"
+                    dense
+                    outlined
+                  ></v-text-field>
+                </validation-provider>
+                <validation-provider
+                  v-slot:="{ errors }"
+                  name="City"
+                  :rules="{ required: true }"
+                >
+                  <v-text-field
+                    v-model="city"
+                    label="City"
+                    :error-messages="errors"
+                    dense
+                    outlined
+                  ></v-text-field>
+                </validation-provider>
+                <validation-provider
+                  v-slot:="{ errors }"
+                  name="Street"
+                  :rules="{ required: true }"
+                >
+                  <v-text-field
+                    v-model="street"
+                    label="Street"
+                    :error-messages="errors"
+                    dense
+                    outlined
+                  ></v-text-field>
+                </validation-provider>
+                <validation-provider
+                  v-slot:="{ errors }"
+                  name="Postal Code"
+                  :rules="{ required: true }"
+                >
+                  <v-text-field
+                    v-model="postalCode"
+                    label="Postal Code"
+                    type="number"
+                    :error-messages="errors"
+                    dense
+                    outlined
+                  ></v-text-field>
+                </validation-provider>
+                <validation-provider
+                  v-slot:="{ errors }"
+                  name="Topology"
+                  :rules="{ required: true }"
+                >
+                  <v-text-field
+                    v-model="topology"
+                    label="Topology"
+                    :error-messages="errors"
+                    dense
+                    outlined
+                  ></v-text-field>
+                </validation-provider>
+                <validation-provider
+                  v-slot:="{ errors }"
+                  name="Floor Area BRA"
+                  :rules="{ required: true }"
+                >
+                  <v-text-field
+                    v-model="floorAreaBRA"
+                    label="Floor Area BRA"
+                    type="number"
+                    :error-messages="errors"
+                    dense
+                    outlined
+                  ></v-text-field>
+                </validation-provider>
+                <validation-provider
+                  v-slot:="{ errors }"
+                  name="Floor Area BTA"
+                  :rules="{ required: true }"
+                >
+                  <v-text-field
+                    v-model="floorAreaBTA"
+                    label="Floor Area BTA"
+                    type="number"
+                    :error-messages="errors"
+                    dense
+                    outlined
+                  ></v-text-field>
+                </validation-provider>
+                <validation-provider
+                  v-slot:="{ errors }"
+                  name="Floor Area BYA"
+                  :rules="{ required: true }"
+                >
+                  <v-text-field
+                    v-model="floorAreaBYA"
+                    label="Floor Area BYA"
+                    type="number"
+                    :error-messages="errors"
+                    dense
+                    outlined
+                  ></v-text-field>
+                </validation-provider>
+              </v-card-text>
 
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="dialog = false">
-              Close
-            </v-btn>
-            <v-btn color="blue darken-1" text @click="addProject"> Save </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="dialog = false">
+                  Close
+                </v-btn>
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  type="submit"
+                  :disabled="invalid"
+                  @click="addProject"
+                >
+                  Save
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </form>
+      </validation-observer>
     </v-row>
     <v-snackbar
       v-model="snackbar"
@@ -166,9 +252,14 @@
 </template>
 
 <script>
+import { ValidationObserver, ValidationProvider } from 'vee-validate'
 import db from '@/plugins/firebase'
 export default {
   name: 'Projects',
+  components: {
+    ValidationObserver,
+    ValidationProvider,
+  },
   data() {
     return {
       src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
@@ -187,9 +278,10 @@ export default {
       floorAreaBYA: '',
       topology: '',
       projects: [],
+      versionCount: '',
     }
   },
-  created() {
+  mounted() {
     this.getProjects()
   },
   methods: {

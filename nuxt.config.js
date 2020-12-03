@@ -20,7 +20,7 @@ export default {
   css: [],
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-  plugins: [],
+  plugins: ['~/plugins/vee-validate.js'],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
   components: true,
@@ -37,6 +37,7 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
+    '@nuxtjs/auth',
   ],
 
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
@@ -57,7 +58,26 @@ export default {
       },
     },
   },
+  auth: {
+    strategies: {
+      google: {
+        client_id:
+          '261372235180-ae132heek26ifmh2rjsuaanp42qhumjq.apps.googleusercontent.com',
+        redirect_uri: 'http://localhost:3000',
+      },
+    },
+    redirect: {
+      login: ' /login ',
+      logout: '/login',
+      home: '/',
+    },
+  },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
-  build: {},
+  build: {
+    transpile: ['vee-validate/dist/rules'],
+  },
+  router: {
+    middleware: ['auth'],
+  },
 }
