@@ -19,7 +19,7 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig)
   firebase.firestore().settings({ timestampsInSnapshots: true })
-  firebase.analytics()
+  // firebase.analytics()
 }
 const db = firebase.firestore()
 export const auth = firebase.auth()

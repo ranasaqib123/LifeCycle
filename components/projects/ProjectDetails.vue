@@ -10,18 +10,20 @@
       "
     >
       <div style="margin-left: 130px">
-        <v-col cols="12" sm="6" md="3">
+        <v-col cols="12" sm="12" md="12">
           <h2 style="color: white">Project</h2>
           <v-text-field
             v-if="isEditing == true"
+            v-model="projectName"
             label="Edit Project Name"
-            color="white"
-            solo-inverted
+            solo
             dense
             flat
+            hide-details
+            style="width: fit-content"
             outlined
-            dark
-            @focusout="changeProjectName"
+            append-icon="mdi-check"
+            @click:append="changeProjectName"
           ></v-text-field>
           <h2 v-else style="color: white">
             {{ projectDetails.projectName }}
@@ -126,7 +128,12 @@
       "
     ></div>
     <div style="margin: 50px">
-      <v-data-table :headers="headers" :items="version" class="elevation-1">
+      <v-data-table
+        :headers="headers"
+        :items="version"
+        class="elevation-1"
+        @click:row="(item) => versionDetail(item.id)"
+      >
         <template v-slot:top>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
@@ -135,34 +142,57 @@
                 ><v-icon small>mdi-plus</v-icon>ADD</v-btn
               >
             </template>
-            <v-card
-              ><v-card-title>
-                <span style="text-align: center">{{ formTitle }}</span>
-              </v-card-title>
-              <v-card-text>
-                <v-text-field
-                  v-model="versionInput"
-                  label="Version"
-                  outlined
-                  dense
-                ></v-text-field>
-                <v-text-field
-                  v-model="projectPhase"
-                  label="Project Phase"
-                  outlined
-                  dense
-                ></v-text-field>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">
-                  Cancel
-                </v-btn>
-                <v-btn color="blue darken-1" text @click="addVersion">
-                  Save
-                </v-btn>
-              </v-card-actions>
-            </v-card>
+            <validation-observer v-slot:="{ invalid }">
+              <form>
+                <v-card
+                  ><v-card-title>
+                    <span style="text-align: center">{{ formTitle }}</span>
+                  </v-card-title>
+                  <v-card-text>
+                    <validation-provider
+                      v-slot:="{ errors }"
+                      name="Version"
+                      :rules="{ required: true }"
+                    >
+                      <v-text-field
+                        v-model="versionInput"
+                        label="Version"
+                        :error-messages="errors"
+                        outlined
+                        dense
+                      ></v-text-field>
+                    </validation-provider>
+                    <validation-provider
+                      v-slot:="{ errors }"
+                      name="Project Phase"
+                      :rules="{ required: true }"
+                    >
+                      <v-text-field
+                        v-model="projectPhase"
+                        label="Project Phase"
+                        :error-messages="errors"
+                        outlined
+                        dense
+                      ></v-text-field>
+                    </validation-provider>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="close">
+                      Cancel
+                    </v-btn>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="editedIndex === 0 ? update() : addVersion()"
+                      :disabled="invalid"
+                    >
+                      Save
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </form>
+            </validation-observer>
           </v-dialog>
         </template>
         <template v-slot:item.actions="{ item }">
@@ -185,10 +215,10 @@
             small
             class="mr-2"
             color="blue"
-            @click="addVersion(item)"
+            @click.stop.prevent="editVersion(item)"
             >mdi-pencil</v-icon
           >
-          <v-icon small class="mr-2" @click="duplicateItem(item)"
+          <v-icon small class="mr-2" @click.stop.prevent="duplicateItem(item)"
             >mdi-plus</v-icon
           >
         </template>
@@ -206,9 +236,15 @@
 </template>
 
 <script>
+import { ValidationObserver, ValidationProvider } from 'vee-validate'
+
 import db from '@/plugins/firebase'
 export default {
   name: 'ProjectDetails',
+  components: {
+    ValidationObserver,
+    ValidationProvider,
+  },
   data() {
     return {
       loading: false,
@@ -217,10 +253,12 @@ export default {
       snackbarColor: 'green',
       snackbarText: 'Success',
       isEditing: false,
+      projectName: '',
       projectDetails: {},
       editedIndex: -1,
       versionInput: '',
       projectPhase: '',
+      versionId: null,
       version: [],
       headers: [
         {
@@ -248,65 +286,91 @@ export default {
     },
   },
   mounted() {
+    this.getProjectDetail()
     this.getVersion()
   },
   methods: {
-    async addVersion(item) {
-      const id = this.$route.params.id
-      this.editedIndex = this.version.indexOf(item)
-      console.log(this.editedIndex)
+    editVersion(item) {
+      console.log(item)
+      console.log(item.id)
+      this.editedIndex = 0
       this.dialog = true
-      if (this.editedIndex > -1) {
-        const data = await db.collection('projects').doc(id)
-        await data
-          .collection('version')
-          .get()
-          .then((snapshot) => {
-            snapshot.forEach((doc) => {
-              const subDocData = doc.data()
-              console.log(subDocData)
-            })
-          })
-        console.log('edited condition running')
-      } else {
-        db.collection('projects')
-          .doc(id)
-          .collection('version')
-          .add({
-            version: this.versionInput,
-            projectPhase: this.projectPhase,
-            lastEdited: 'never',
-            completed: true,
-          })
-          .then(() => {
-            console.log(' version added')
-          })
-        this.dialog = false
-        await this.getVersion()
-        this.snackbar = true
-        this.snackbarColor = 'green'
-        this.snackbarText = 'Version Created Successfully'
-      }
+      this.versionId = item.id
+      this.versionInput = item.version
+      this.projectPhase = item.projectPhase
+    },
+    async update() {
+      const id = this.$route.params.id
+      await db
+        .collection('projects')
+        .doc(id)
+        .collection('version')
+        .doc(this.versionId)
+        .update({
+          version: this.versionInput,
+          projectPhase: this.projectPhase,
+          lastEdited: 'never',
+          completed: true,
+        })
+        .then(() => {
+          console.log(' version updated')
+        })
+      this.dialog = false
+      this.versionInput = null
+      this.projectPhase = null
+      this.versionId = null
+      await this.getVersion()
+      this.snackbar = true
+      this.snackbarColor = 'green'
+      this.snackbarText = 'Version Updated Successfully'
+    },
+    async addVersion() {
+      const id = this.$route.params.id
+      await db
+        .collection('projects')
+        .doc(id)
+        .collection('version')
+        .add({
+          version: this.versionInput,
+          projectPhase: this.projectPhase,
+          lastEdited: 'never',
+          completed: true,
+        })
+        .then(() => {
+          console.log(' version added')
+        })
+      this.dialog = false
+      this.versionInput = null
+      this.projectPhase = null
+      await this.getVersion()
+      this.snackbar = true
+      this.snackbarColor = 'green'
+      this.snackbarText = 'Version Created Successfully'
     },
     async getVersion() {
       const id = this.$route.params.id
-      db.collection('projects')
+      this.version = []
+      await db
+        .collection('projects')
         .doc(id)
         .collection('version')
         .get()
         .then((snapshot) => {
           snapshot.forEach((doc) => {
             const data = doc.data()
+            data.id = doc.id
             this.version.push(data)
           })
         })
+    },
+    async getProjectDetail() {
+      const id = this.$route.params.id
       await db
         .collection('projects')
         .doc(id)
         .get()
         .then((doc) => {
           if (doc.exists) {
-            console.log(doc.data())
             this.projectDetails = doc.data()
           } else {
             console.log('no such document found')
@@ -314,18 +378,6 @@ export default {
         })
         .catch((err) => {
           console.log(err)
-        })
-      await db
-        .collection('projects')
-        .doc(id)
-        .collection('version')
-        .get()
-        .then((doc) => {
-          if (doc.exists) {
-            console.log(doc.data())
-          } else {
-            console.log('no document')
-          }
         })
     },
     async duplicateItem(item) {
@@ -384,18 +436,33 @@ export default {
       })
     },
     changeProjectField() {
+      this.projectName = this.projectDetails.projectName
       this.isEditing = true
     },
-    changeProjectName() {
+    async changeProjectName() {
+      const id = this.$route.params.id
+      await db
+        .collection('projects')
+        .doc(id)
+        .update({
+          projectName: this.projectName,
+        })
+        .then(() => {
+          console.log(' project name updated updated')
+        })
+      this.isEditing = false
+      await this.getProjectDetail()
+      this.snackbar = true
+      this.snackbarColor = 'green'
+      this.snackbarText = 'Project Name Updated Successfully'
       this.isEditing = false
     },
     goBack() {
       this.$router.go(-1)
     },
-    // versionId(i) {
-    //   this.$router.push(`versiondetails/${i.id}`)
-    // @click:row="versionId"
-    // },
+    versionDetail(i) {
+      this.$router.push(`versiondetails/${i}`)
+    },
   },
 }
 </script>

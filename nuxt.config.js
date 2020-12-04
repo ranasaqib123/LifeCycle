@@ -37,7 +37,7 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
-    '@nuxtjs/auth',
+    // '@nuxtjs/auth',
   ],
 
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
@@ -59,25 +59,34 @@ export default {
     },
   },
   auth: {
-    strategies: {
-      google: {
-        client_id:
-          '261372235180-ae132heek26ifmh2rjsuaanp42qhumjq.apps.googleusercontent.com',
-        redirect_uri: 'http://localhost:3000',
-      },
-    },
-    redirect: {
-      login: ' /login ',
-      logout: '/login',
-      home: '/',
-    },
+    // persistence: 'local', // default
+    // initialize: {
+    //   onAuthStateChangedMutation: 'ON_AUTH_STATE_CHANGED_MUTATION',
+    //   onAuthStateChangedAction: 'onAuthStateChangedAction',
+    //   subscribeManually: true,
+    // },
+    // ssr: false, // default
+    // emulatorPort: 9099,
+    // emulatorHost: 'http://localhost',
+    // strategies: {
+    //   google: {
+    //     client_id:
+    //       '261372235180-ae132heek26ifmh2rjsuaanp42qhumjq.apps.googleusercontent.com',
+    //   },
+    //   watchLoggedIn: true,
+    // },
+    // redirect: {
+    //   login: ' /login ',
+    //   logout: '/login',
+    //   home: '/',
+    // },
   },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {
     transpile: ['vee-validate/dist/rules'],
   },
-  router: {
-    middleware: ['auth'],
-  },
+  // router: {
+  //   middleware: 'router-auth',
+  // },
 }

@@ -47,6 +47,17 @@
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item
+          active-class="drawer-menu-item-active"
+          class="drawer-menu-item"
+          @click="logout"
+        >
+          <v-list-item-content>
+            <v-list-item-title class="drawer-menu-item-title"
+              >Logout</v-list-item-title
+            >
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
     <v-content>
@@ -74,6 +85,12 @@ export default {
         },
       ],
     }
+  },
+  methods: {
+    logout() {
+      // await firebase.auth().signOut()
+      // await this.$auth.logout()
+    },
   },
 }
 </script>

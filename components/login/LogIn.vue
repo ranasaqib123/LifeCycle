@@ -68,19 +68,31 @@ export default {
   },
   methods: {
     async signIn() {
-      try {
-        const res = await this.$auth.loginWith('google')
-        console.log('login result:' + res)
-      } catch (err) {
-        console.log('error:' + err)
-      }
+      // try {
+      //   console.log('here')
+      // const res = await this.$auth.loginWith('google', {
+      //   data: this.login,
+      // })
+      // console.log('login result:' + res)
+      // } catch (err) {
+      //   console.log('error:' + err)
+      // }
       // if (!firebase.auth().currentUser) {
       //   const provider = googleProvider
-      //   const result = await firebase.auth().signInWithPopup(provider)
-      //   const user = result.user
-      //   const userName = user.displayName
-      //   const photoUrl = user.photoURL
-      //   console.log(userName, photoUrl)
+      //   await firebase
+      //     .auth()
+      //     .signInWithPopup(provider)
+      //     .then((result) => {
+      //       console.log(result)
+      //       this.$router.push('/projects')
+      //     })
+      //     .catch((error) => {
+      //       console.log(error)
+      //     })
+      // const user = result.user
+      // const userName = user.displayName
+      // const photoUrl = user.photoURL
+      // console.log(userName, photoUrl)
       // } else {
       //   await firebase.auth().signOut()
       // }

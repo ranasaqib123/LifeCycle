@@ -13,7 +13,7 @@
         <v-row><v-col>project</v-col></v-row>
         <v-row><v-col>project</v-col></v-row>
         <v-row
-          ><v-col>dfjdfsdfdfsfdsf</v-col
+          ><v-col>Demo Data</v-col
           ><v-col style="margin-left: -600px"
             ><v-btn x-small rounded
               ><v-icon x-small>mdi-plus</v-icon>create new version based on this
@@ -23,40 +23,36 @@
         >
       </div>
       <div>
-        <v-card>
-          <v-tabs
-            v-model="tab"
-            background-color="red"
-            center-active
-            centered
-            dark
-          >
-            <v-tab v-for="(tab, i) in tabItems" :key="i" @click="tabClick(i)">{{
-              tab
-            }}</v-tab>
-          </v-tabs>
-        </v-card>
+        <v-tabs
+          v-model="tab"
+          background-color="red"
+          center-active
+          centered
+          dark
+        >
+          <v-tab v-for="(tab, i) in tabItems" :key="i">{{ tab }}</v-tab>
+        </v-tabs>
       </div>
     </div>
     <div style="margin-left: 25px; margin-top: 25px">
       <v-icon @click="goBack">mdi-arrow-left</v-icon>
     </div>
-    <v-tabs-items>
-      <div v-if="selectedTab === 0">
+    <v-tabs-items v-model="tab">
+      <v-tab-item>
         <energy-tab />
-      </div>
-      <div v-if="selectedTab === 1">
+      </v-tab-item>
+      <v-tab-item>
         <inventory-tab />
-      </div>
-      <div v-if="selectedTab === 2">
+      </v-tab-item>
+      <v-tab-item>
         <result-tab />
-      </div>
-      <div v-if="selectedTab === 3">
+      </v-tab-item>
+      <v-tab-item>
         <analysis-tab />
-      </div>
-      <div v-if="selectedTab === 4">
+      </v-tab-item>
+      <v-tab-item>
         <benchmark-tab />
-      </div>
+      </v-tab-item>
     </v-tabs-items>
   </div>
 </template>
