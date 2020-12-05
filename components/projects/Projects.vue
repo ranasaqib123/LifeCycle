@@ -254,6 +254,7 @@
 <script>
 import { ValidationObserver, ValidationProvider } from 'vee-validate'
 import db from '@/plugins/firebase'
+import { mapGetters } from 'vuex'
 export default {
   name: 'Projects',
   components: {
@@ -280,6 +281,9 @@ export default {
       projects: [],
       versionCount: '',
     }
+  },
+  computed: {
+    ...mapGetters(['loggedInUser']),
   },
   mounted() {
     this.getProjects()

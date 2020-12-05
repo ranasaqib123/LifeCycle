@@ -14,7 +14,11 @@ const createStore = () => {
 
       isAuthenticated(state) {
         return !!state.user
+        // return state.auth.loggedIn
       },
+      // loggedInUser(state) {
+      //   return state.auth.user
+      // },
     },
 
     mutations: {

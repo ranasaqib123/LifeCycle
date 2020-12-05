@@ -19,13 +19,13 @@
         ></v-list-item-title>
         <v-list-item two-line>
           <v-list-item-avatar>
-            <img src="https://randomuser.me/api/portraits/women/81.jpg" />
+            <img :src="user.photoURL" />
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title style="color: white"
-              >Jane Smith</v-list-item-title
-            >
+            <v-list-item-title style="color: white">{{
+              user.displayName
+            }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </template>

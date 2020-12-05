@@ -37,7 +37,7 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
-    // '@nuxtjs/auth',
+    '@nuxtjs/auth',
   ],
 
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
@@ -64,12 +64,13 @@ export default {
         client_id:
           '261372235180-ae132heek26ifmh2rjsuaanp42qhumjq.apps.googleusercontent.com',
       },
+      watchLoggedIn: true,
     },
-    // redirect: {
-    //   login: ' /login ',
-    //   logout: '/login',
-    //   home: '/',
-    // },
+    redirect: {
+      login: ' /login ',
+      logout: '/login',
+      home: '/',
+    },
   },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
@@ -77,6 +78,6 @@ export default {
     transpile: ['vee-validate/dist/rules'],
   },
   // router: {
-  //   middleware: 'router-auth',
+  //   middleware: ['auth'],
   // },
 }
