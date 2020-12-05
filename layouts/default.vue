@@ -50,7 +50,7 @@
         <v-list-item
           active-class="drawer-menu-item-active"
           class="drawer-menu-item"
-          @click="logout"
+          @click="signOut"
         >
           <v-list-item-content>
             <v-list-item-title class="drawer-menu-item-title"
@@ -67,6 +67,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   data() {
     return {
@@ -86,10 +88,21 @@ export default {
       ],
     }
   },
+  computed: {
+    ...mapGetters({
+      user: 'user',
+    }),
+  },
   methods: {
-    logout() {
-      // await firebase.auth().signOut()
-      // await this.$auth.logout()
+    signOut() {
+      this.$store
+        .dispatch('signOut')
+        .then(() => {
+          this.$router.push('/login')
+        })
+        .catch((err) => {
+          alert(err)
+        })
     },
   },
 }

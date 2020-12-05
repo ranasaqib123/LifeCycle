@@ -20,7 +20,7 @@ export default {
   css: [],
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-  plugins: ['~/plugins/vee-validate.js'],
+  plugins: ['~/plugins/vee-validate.js', '~/plugins/fireauth.js'],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
   components: true,
@@ -59,22 +59,12 @@ export default {
     },
   },
   auth: {
-    // persistence: 'local', // default
-    // initialize: {
-    //   onAuthStateChangedMutation: 'ON_AUTH_STATE_CHANGED_MUTATION',
-    //   onAuthStateChangedAction: 'onAuthStateChangedAction',
-    //   subscribeManually: true,
-    // },
-    // ssr: false, // default
-    // emulatorPort: 9099,
-    // emulatorHost: 'http://localhost',
-    // strategies: {
-    //   google: {
-    //     client_id:
-    //       '261372235180-ae132heek26ifmh2rjsuaanp42qhumjq.apps.googleusercontent.com',
-    //   },
-    //   watchLoggedIn: true,
-    // },
+    strategies: {
+      google: {
+        client_id:
+          '261372235180-ae132heek26ifmh2rjsuaanp42qhumjq.apps.googleusercontent.com',
+      },
+    },
     // redirect: {
     //   login: ' /login ',
     //   logout: '/login',

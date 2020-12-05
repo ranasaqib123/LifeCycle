@@ -31,7 +31,7 @@
             height="50px"
             color="#F9610C"
             style="color: white"
-            @click="signIn"
+            @click="userSignInWithGoogle"
             >Sign in with Gmail</v-btn
           >
           <div
@@ -57,8 +57,7 @@
 </template>
 
 <script>
-// import firebase from 'firebase'
-// import { googleProvider } from '../../plugins/firebase'
+import { googleProvider } from '../../plugins/firebase'
 export default {
   name: 'Login',
   data() {
@@ -67,35 +66,17 @@ export default {
     }
   },
   methods: {
-    async signIn() {
-      // try {
-      //   console.log('here')
-      // const res = await this.$auth.loginWith('google', {
-      //   data: this.login,
-      // })
-      // console.log('login result:' + res)
-      // } catch (err) {
-      //   console.log('error:' + err)
-      // }
-      // if (!firebase.auth().currentUser) {
-      //   const provider = googleProvider
-      //   await firebase
-      //     .auth()
-      //     .signInWithPopup(provider)
-      //     .then((result) => {
-      //       console.log(result)
-      //       this.$router.push('/projects')
-      //     })
-      //     .catch((error) => {
-      //       console.log(error)
-      //     })
-      // const user = result.user
-      // const userName = user.displayName
-      // const photoUrl = user.photoURL
-      // console.log(userName, photoUrl)
-      // } else {
-      //   await firebase.auth().signOut()
-      // }
+    userSignInWithGoogle() {
+      this.$store
+        .dispatch('sgnInWithGoogle', {
+          googleProvider,
+        })
+        .then(() => {
+          this.$router.push('/')
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
   },
 }
