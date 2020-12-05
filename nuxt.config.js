@@ -67,9 +67,10 @@ export default {
       watchLoggedIn: true,
     },
     redirect: {
-      login: ' /login ',
-      logout: '/login',
-      home: '/',
+      login: '/login',
+      logout: '/',
+      callback: '/',
+      home: '/projects',
     },
   },
 
@@ -78,6 +79,6 @@ export default {
     transpile: ['vee-validate/dist/rules'],
   },
   // router: {
-  //   middleware: ['auth'],
+  //   middleware: ['router-auth'],
   // },
 }
